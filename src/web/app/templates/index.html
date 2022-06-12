@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="title">Dashboard</div>
+    <h1 id="dashboard_id"></h1>
+
+    <div id="no_status">
+        <h1>No status</h1>
+    </div>
+
+    <hr />
+
+
+    <div id="todo">
+        <h1>Todo:</h1>
+    </div>
+
+    <hr />
+
+
+    <div id="in_progress">
+        <h1>In progress:</h1>
+    </div>
+
+    <hr />
+
+
+    <div id="done">
+        <h1>Done:</h1>
+    </div>
+
+    <hr />
+
+</body>
+</html>
