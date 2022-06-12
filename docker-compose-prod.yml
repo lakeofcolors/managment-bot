@@ -23,6 +23,8 @@ services:
       - 5432:5432
     networks:
       - main_net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
   nginx:
     build: ./nginx/prod
@@ -56,3 +58,5 @@ services:
 networks:
   main_net:
     external: True
+volumes:
+    postgres_data:

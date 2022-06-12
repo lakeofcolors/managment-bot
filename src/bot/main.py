@@ -74,18 +74,9 @@ async def create_project(message: types.Message):
     state = StateMenuService(user_id)
     state.change_state('init')
     dashboard_id = 1
-    #kb = state.get_keyboard()markup = types.InlineKeyboardMarkup(
-    murkup = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                types.InlineKeyboardButton(
-                    text="Dashboard",
-                    web_app=types.WebAppInfo(url=f'https://lakeofcolors.com?dashboard_id={dashboard_id}&user_id=1'),
-                )
-            ]
-        ]
-    )
-    await message.answer(f'Project {name} has been created!', reply_markup=murkup)
+    kb = state.get_keyboard()
+
+    await message.reply(f'Project {name} has been created!', reply_markup=kb)
 
 
 @dp.message_handler(commands=['start', 'help'])
@@ -138,14 +129,34 @@ async def on_message(message: types.Message):
         state.change_state('init')
         kb = state.get_keyboard()
         await message.reply(f'Project {name} has been created!', reply_markup=kb)
-    if state.state == "choice":
+    elif state.state == "choice":
         project = message.text
         state.choices_project = project
         kb = state.get_keyboard()
+        state.change_state("choice_dashboard")
         await message.reply(f'Choice dashboard', reply_markup=kb)
 
-    if state.state == "create_dashboard":
+    elif state.state == "choice_dashboard":
+        dashboard = message.text
+        service = DashboardService()
 
+        dashboard_id = service.get_dashboard(dashboard).id
+        print(dashboard_id)
+
+        markup = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    types.InlineKeyboardButton(
+                        text="Dashboard",
+                        web_app=types.WebAppInfo(url=f'https://lakeofcolors.com?dashboard_id={dashboard_id}user_id=1'),
+                    )
+                ]
+            ]
+        )
+
+        await message.answer("see dashboard", reply_markup=markup)
+
+    elif state.state == "create_dashboard":
         with new_session() as session:
             project = session.query(Project).filter_by(name=project_name).first()
 

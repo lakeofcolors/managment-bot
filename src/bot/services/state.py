@@ -25,7 +25,8 @@ class StateMenuService(metaclass=UserStateMeta):
             'projects': self.projects,
             'create_project': None,
             'choice': self.choice,
-            'create_dashboard': None
+            'create_dashboard': None,
+            'choice_dashboard': None
         }
         self.user = user_id
         self.state = "init"
@@ -59,6 +60,7 @@ class StateMenuService(metaclass=UserStateMeta):
 
     def choice(self, *args, **kwargs):
         project_name = self.choices_project
+        print(project_name)
         # user_id = kwargs.get('user_id')
         with new_session() as session:
             project = session.query(Project).filter_by(name=project_name).first()

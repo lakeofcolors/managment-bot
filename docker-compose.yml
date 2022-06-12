@@ -24,6 +24,9 @@ services:
     networks:
       - main_net
 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
   nginx:
     image: nginx:latest
     ports:
@@ -45,3 +48,5 @@ services:
 networks:
   main_net:
     external: True
+volumes:
+    postgres_data:
