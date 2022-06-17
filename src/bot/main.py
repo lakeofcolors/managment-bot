@@ -15,7 +15,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from db.models import Project
 from db.db import new_session
-
+from services.chat import ChatService
 
 
 API_TOKEN = os.getenv("TOKEN")
@@ -26,6 +26,26 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+
+@dp.my_chat_member_handler()
+async def on_bot_join(channel: types.Chat):
+    service = ChatService()
+    bot_ = channel['new_chat_member']
+    status = bot_['status']
+
+    if status == "member":
+        await bot.send_message(channel['chat']['id'], 'Hi, every!')
+
+    service.create_chat(channel)
+
+
+@dp.message_handler(commands=['registration'])
+async def register_member(message: types.Message):
+    service = ChatService()
+    service.add_member(message['from'], message['chat'])
+    member_name = message['from']['username']
+    await bot.send_message(message['chat']['id'], f"{member_name}, can see the chat in bot")
+
 
 @dp.message_handler(commands=['craftdashboard'])
 async def craft_dashboard(message: types.Message):
@@ -86,9 +106,9 @@ async def start(message: types.Message):
     """
     user_id = message.from_user.id
     state = StateMenuService(user_id=user_id)
-    state.change_state('init')
-    kb = state.get_keyboard()
-
+    state.change_state('pre_init')
+    kb = state.get_keyboard(member_id=user_id)
+    state.change_state('choice_chat')
     await message.reply('Hi', reply_markup=kb)
 
 
@@ -98,8 +118,10 @@ async def projects(message: types.Message):
     # await bot.send_message(message.chat.id, message.text)
     user_id = message.from_user.id
     service = ProjectService()
-    projects = service.get_projects(user_id)
     state = StateMenuService(user_id=user_id)
+    chat_id= ChatService().get_chat_id(state.choices_chat)
+    print(chat_id)
+    projects = service.get_projects(user_id=user_id, chat_id=chat_id)
     state.change_state('projects')
     kb = state.get_keyboard(projects=projects)
     state.change_state('choice')
@@ -115,7 +137,6 @@ async def back(message: types.Message):
     await message.reply("0", reply_markup=kb)
 
 
-
 @dp.message_handler()
 async def on_message(message: types.Message):
     user_id = message.from_user.id
@@ -123,12 +144,24 @@ async def on_message(message: types.Message):
     project_name = state.choices_project
     if state.state == "create_project":
         service = ProjectService()
+        chat_service = ChatService()
         name = message.text.split(' ')[0]
-        service.create_project(name=name, user_id=user_id)
+        chat = chat_service.get_chat_id(state.choices_chat)
+
+        service.create_project(name=name, user_id=user_id, chat_id=chat)
 
         state.change_state('init')
         kb = state.get_keyboard()
         await message.reply(f'Project {name} has been created!', reply_markup=kb)
+
+    elif state.state == 'choice_chat':
+        chat = message.text
+        state.choices_chat = chat
+
+        state.change_state('init')
+        kb = state.get_keyboard()
+        await message.reply(f'You can create or choice project', reply_markup=kb)
+
     elif state.state == "choice":
         project = message.text
         state.choices_project = project
@@ -148,7 +181,7 @@ async def on_message(message: types.Message):
                 [
                     types.InlineKeyboardButton(
                         text="Dashboard",
-                        web_app=types.WebAppInfo(url=f'https://lakeofcolors.com?dashboard_id={dashboard_id}user_id=1'),
+                        web_app=types.WebAppInfo(url=f'https://lakeofcolors.com?dashboard_id={dashboard_id}'),
                     )
                 ]
             ]

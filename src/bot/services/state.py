@@ -4,14 +4,15 @@ from aiogram.types import ReplyKeyboardRemove, \
 
 from db.models import Project, Dashboard
 from db.db import new_session
+from services.chat import ChatService
 
 class UserStateMeta(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        print(cls._instances)
+        # print(cls._instances)
         user_id = kwargs.get("user_id")
-        print(user_id, 'user_id')
+        # print(user_id, 'user_id')
         if not cls._instances.get(user_id):
             instance = super().__call__(*args, **kwargs)
             cls._instances[user_id] = instance
@@ -20,7 +21,10 @@ class UserStateMeta(type):
 class StateMenuService(metaclass=UserStateMeta):
     def __init__(self, user_id):
         self.choices_project = None
+        self.choices_chat = None
         self.STATES = {
+            'pre_init': self.pre_init,
+            'choice_chat': None,
             'init': self.init,
             'projects': self.projects,
             'create_project': None,
@@ -37,6 +41,14 @@ class StateMenuService(metaclass=UserStateMeta):
         buttons = ('/projects', '/craftproject')
         for i in buttons:
             kb.add(KeyboardButton(i))
+        return kb
+
+
+    def pre_init(self, *args, **kwargs):
+        chats = ChatService().get_chats(kwargs.get("member_id"))
+        kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        for i in chats:
+            kb.add(KeyboardButton(i.name))
         return kb
 
     def get_keyboard(self, *args, **kwargs):
@@ -60,8 +72,6 @@ class StateMenuService(metaclass=UserStateMeta):
 
     def choice(self, *args, **kwargs):
         project_name = self.choices_project
-        print(project_name)
-        # user_id = kwargs.get('user_id')
         with new_session() as session:
             project = session.query(Project).filter_by(name=project_name).first()
             dashboards = session.query(Dashboard).filter_by(project_id=project.id)

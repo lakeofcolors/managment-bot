@@ -3,5 +3,6 @@ pyopenssl
 Flask-SQLAlchemy
 flask-migrate
 flask-marshmallow
+flask-admin
 marshmallow-sqlalchemy
 psycopg2-binary==2.8.6

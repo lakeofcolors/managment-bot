@@ -14,29 +14,34 @@
     <div class="title">Dashboard</div>
     <h1 id="dashboard_id"></h1>
 
+    <h2>create task</h2>
+    <input id="name" type="text">
+    <button id='create_task' onclick='create_task()'>Создать</button>
+
     <div id="no_status">
-        <h1>No status</h1>
+        <!-- <button onclick="change_state('in_progress')" type="button">move to progress</button> -->
+        <h1 style='background: white; color: black'>No status</h1>
     </div>
 
     <hr />
 
 
     <div id="todo">
-        <h1>Todo:</h1>
+        <h1 style='background: red; color: black'>Todo:</h1>
     </div>
 
     <hr />
 
 
     <div id="in_progress">
-        <h1>In progress:</h1>
+        <h1 style='background: yellow; color: black'>In progress:</h1>
     </div>
 
     <hr />
 
 
     <div id="done">
-        <h1>Done:</h1>
+        <h1 style='background: green; color: black'>Done:</h1>
     </div>
 
     <hr />
