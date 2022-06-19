@@ -18,7 +18,7 @@ function create_task() {
   }
   fetch("https://lakeofcolors.com/api/tasks/create", requestOptions)
     .then(response => response.json())
-    .then(data => alert("create task"))
+    // .then(data => alert("create task"))
   location.reload();
 }
 
@@ -32,7 +32,7 @@ function change_state(status, task_id) {
   }
   fetch("https://lakeofcolors.com/api/tasks/".concat(task_id), requestOptions)
     .then(response => response.json())
-    .then(data => alert("state change"))
+    // .then(data => alert("state change"))
   location.reload();
 }
 
@@ -60,7 +60,7 @@ fetch("https://lakeofcolors.com/api/tasks/dashboard/".concat(dashboard_id))
         var btn = document.createElement("button")
         btn.innerText = "move to ".concat(status);
         btn.addEventListener('click', function handleClick(event){
-          console.log(event);
+          // console.log(event);
           change_state(status, item.id)
         });
         task_obj.appendChild(btn);
