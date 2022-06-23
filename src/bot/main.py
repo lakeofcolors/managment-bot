@@ -34,7 +34,7 @@ async def on_bot_join(channel: types.Chat):
     status = bot_['status']
 
     if status == "member":
-        await bot.send_message(channel['chat']['id'], 'Hi, every!')
+        await bot.send_message(channel['chat']['id'], 'Hi, everyone!')
 
     service.create_chat(channel)
 
@@ -53,7 +53,7 @@ async def craft_dashboard(message: types.Message):
     user_id = message.from_user.id
     state = StateMenuService(user_id=user_id)
     state.change_state('create_dashboard')
-    await message.reply(f'Name is project:')
+    await message.reply(f'Name the dashboard:')
 
 @dp.message_handler(commands=['createdashboard'])
 async def create_dashboard(message: types.Message):
@@ -81,7 +81,7 @@ async def craft_project(message: types.Message):
     user_id = message.from_user.id
     state = StateMenuService(user_id=user_id)
     state.change_state('create_project')
-    await message.reply(f'Name is project:')
+    await message.reply(f'Name the project (1 word without space):')
 
 
 
@@ -109,7 +109,7 @@ async def start(message: types.Message):
     state.change_state('pre_init')
     kb = state.get_keyboard(member_id=user_id)
     state.change_state('choice_chat')
-    await message.reply('Hi', reply_markup=kb)
+    await message.reply("Hi, I'm managment bot!\nI'll help you with installation.\nYou need to do my commands.\nGood luck!\nChoose group:", reply_markup=kb)
 
 
 @dp.message_handler(commands=['projects'])
@@ -125,7 +125,7 @@ async def projects(message: types.Message):
     state.change_state('projects')
     kb = state.get_keyboard(projects=projects)
     state.change_state('choice')
-    await message.reply(message.text, reply_markup=kb)
+    await message.reply("Choose project", reply_markup=kb)
 
 @dp.message_handler(commands=['back'])
 async def back(message: types.Message):
@@ -160,14 +160,14 @@ async def on_message(message: types.Message):
 
         state.change_state('init')
         kb = state.get_keyboard()
-        await message.reply(f'You can create or choice project', reply_markup=kb)
+        await message.reply(f'You can create or choose project', reply_markup=kb)
 
     elif state.state == "choice":
         project = message.text
         state.choices_project = project
         kb = state.get_keyboard()
         state.change_state("choice_dashboard")
-        await message.reply(f'Choice dashboard', reply_markup=kb)
+        await message.reply(f'You can create or choose dashboard', reply_markup=kb)
 
     elif state.state == "choice_dashboard":
         dashboard = message.text
@@ -199,7 +199,7 @@ async def on_message(message: types.Message):
 
         state.change_state('init')
         kb = state.get_keyboard()
-        await message.reply(f'Project {name} has been dashboard!', reply_markup=kb)
+        await message.reply(f'Project {name} has been created!', reply_markup=kb)
 
 
 if __name__ == '__main__':
